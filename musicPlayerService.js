@@ -1,7 +1,7 @@
 import TrackPlayer, { RepeatMode } from "react-native-track-player";
 import { palyListData } from "./src/constant.ts"
 
-export default async function setupPlayer() {
+export async function setupPlayer() {
     let isSetup = false;
     try {
         await TrackPlayer.getCurrentTrack()
