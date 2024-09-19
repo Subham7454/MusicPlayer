@@ -48,22 +48,21 @@ const ControlCenter = () => {
     let newMode;
     switch (repeatMode) {
       case RepeatMode.Off:
-        newMode = RepeatMode.Track; // Repeat current track
+        newMode = RepeatMode.Track;
         break;
       case RepeatMode.Track:
-        newMode = RepeatMode.Queue; // Repeat entire queue
+        newMode = RepeatMode.Queue;
         break;
       case RepeatMode.Queue:
-        newMode = RepeatMode.Off; // Turn off repeat
+        newMode = RepeatMode.Off;
         break;
       default:
-        newMode = RepeatMode.Off; // Default to off
+        newMode = RepeatMode.Off;
     }
     await TrackPlayer.setRepeatMode(newMode);
     setRepeatMode(newMode);
   };
 
-  // Extract only the valid state from playBackState
   const currentPlaybackState =
     playBackState !== undefined && 'state' in playBackState
       ? playBackState.state
@@ -87,13 +86,13 @@ const ControlCenter = () => {
       </Pressable>
       <Pressable onPress={toggleRepeatMode}>
         <Iconasm
-          style={styles.icon}
+          style={styles.iconRepeat}
           name={
             repeatMode === RepeatMode.Off
               ? 'repeat'
               : repeatMode === RepeatMode.Track
               ? 'repeat-one'
-              : 'repeat' // Repeat icon for RepeatMode.Queue
+              : 'repeat'
           }
           size={40}
         />
@@ -113,5 +112,8 @@ const styles = StyleSheet.create({
   },
   icon: {
     color: '#FFFFFF',
+  },
+  iconRepeat: {
+    paddingLeft: 15,
   },
 });
