@@ -35,4 +35,12 @@ export async function playbackService() {
     TrackPlayer.addEventListener(Event.RemotePrevios, () => {
         TrackPlayer.skipToPrevious()
     })
+    TrackPlayer.addEventListener(Event.PlaybackQueueEnded, async () => {
+        const repeatMode = await TrackPlayer.getRepeatMode();
+        if (repeatMode === RepeatMode.Track) {
+            // If RepeatMode is Track, play the current track again
+            await TrackPlayer.seekTo(0); // Seek to the start of the track
+            await TrackPlayer.play(); // Start playing again
+        }
+    });
 }

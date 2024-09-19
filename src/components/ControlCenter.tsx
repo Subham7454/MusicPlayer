@@ -1,22 +1,37 @@
+import React, {useState, useEffect} from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
-import React from 'react';
-import TrackPlayer, {State, usePlaybackState} from 'react-native-track-player';
+import TrackPlayer, {
+  State,
+  usePlaybackState,
+  RepeatMode,
+} from 'react-native-track-player';
 import Iconasm from 'react-native-vector-icons/MaterialIcons';
 
 const ControlCenter = () => {
   const playBackState = usePlaybackState();
+  const [repeatMode, setRepeatMode] = useState<RepeatMode>(RepeatMode.Off); // State for repeat mode
 
-  // next button
+  useEffect(() => {
+    // Fetch the current repeat mode when the component mounts
+    const fetchRepeatMode = async () => {
+      const mode = await TrackPlayer.getRepeatMode();
+      setRepeatMode(mode);
+    };
+
+    fetchRepeatMode();
+  }, []);
+
+  // Next button
   const skipToNext = async () => {
     await TrackPlayer.skipToNext();
   };
 
-  // previous button
+  // Previous button
   const skipToPrevious = async () => {
-    await TrackPlayer.skipToPrevious(); // corrected to skip to previous
+    await TrackPlayer.skipToPrevious();
   };
 
-  // play/pause toggle
+  // Play/pause toggle
   const togglePlay = async (playback: State | undefined) => {
     const currentTrack = await TrackPlayer.getCurrentTrack();
     if (currentTrack !== null && playback !== undefined) {
@@ -26,6 +41,26 @@ const ControlCenter = () => {
         await TrackPlayer.pause();
       }
     }
+  };
+
+  // Toggle repeat mode
+  const toggleRepeatMode = async () => {
+    let newMode;
+    switch (repeatMode) {
+      case RepeatMode.Off:
+        newMode = RepeatMode.Track; // Repeat current track
+        break;
+      case RepeatMode.Track:
+        newMode = RepeatMode.Queue; // Repeat entire queue
+        break;
+      case RepeatMode.Queue:
+        newMode = RepeatMode.Off; // Turn off repeat
+        break;
+      default:
+        newMode = RepeatMode.Off; // Default to off
+    }
+    await TrackPlayer.setRepeatMode(newMode);
+    setRepeatMode(newMode);
   };
 
   // Extract only the valid state from playBackState
@@ -50,6 +85,19 @@ const ControlCenter = () => {
       <Pressable onPress={skipToNext}>
         <Iconasm style={styles.icon} name="skip-next" size={40} />
       </Pressable>
+      <Pressable onPress={toggleRepeatMode}>
+        <Iconasm
+          style={styles.icon}
+          name={
+            repeatMode === RepeatMode.Off
+              ? 'repeat'
+              : repeatMode === RepeatMode.Track
+              ? 'repeat-one'
+              : 'repeat' // Repeat icon for RepeatMode.Queue
+          }
+          size={40}
+        />
+      </Pressable>
     </View>
   );
 };
@@ -65,8 +113,5 @@ const styles = StyleSheet.create({
   },
   icon: {
     color: '#FFFFFF',
-  },
-  playButton: {
-    marginHorizontal: 24,
   },
 });
